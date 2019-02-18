@@ -19,17 +19,6 @@ import kotlinx.android.synthetic.main.activity_chat_control.*
 import kotlinx.android.synthetic.main.fragment_threads_list.*
 
 /**
- * . _  _
- * .| || | _
- * -| || || |   Created by:
- * .| || || |-  Danylo Oliinyk
- * ..\_  || |   on
- * ....|  _/    2/18/19
- * ...-| | \    at Virgil Security
- * ....|_|-
- */
-
-/**
  * ThreadsListFragment
  */
 class ThreadsListFragment : Fragment() {
