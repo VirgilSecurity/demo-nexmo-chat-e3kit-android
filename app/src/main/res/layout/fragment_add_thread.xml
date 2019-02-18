@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <include
+            android:id="@+id/toolbarAddThread"
+            layout="@layout/toolbar_custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+            app:layout_constraintTop_toBottomOf="@id/toolbarAddThread"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="256dp"
+            android:layout_height="48dp"
+            android:inputType="text"
+            app:layout_constraintBottom_toTopOf="@id/btnAddThread"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:hint="@string/interlocutor"
+            android:id="@+id/etInterlocutor"
+            tools:ignore="Autofill"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_marginTop="@dimen/default_margin"
+            android:layout_height="wrap_content"
+            android:text="@string/start_thread"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etInterlocutor"
+            android:id="@+id/btnAddThread"/>
+</android.support.constraint.ConstraintLayout>
