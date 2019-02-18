@@ -8,6 +8,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
 import io.reactivex.Single
 import com.github.kittinunf.result.Result
+import org.json.JSONObject
 
 /**
  * AuthRx
@@ -15,9 +16,12 @@ import com.github.kittinunf.result.Result
 object AuthRx {
 
     fun authenticate(identity: String) = Single.create<String> { emitter ->
-        val parameters = mutableListOf<Pair<String, String>>()
-            .apply { add(Pair(KEY_IDENTITY, identity)) }
-        (BASE_URL + AUTHENTICATE).httpPost(parameters)
+        val jsonBody = JSONObject()
+        jsonBody.put(KEY_IDENTITY, identity)
+
+        (BASE_URL + AUTHENTICATE).httpPost()
+            .body(jsonBody.toString())
+            .header("Content-Type", "application/json")
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Success -> {
@@ -35,8 +39,10 @@ object AuthRx {
     /**
      * You can call it only after successful [authenticate]
      */
-    fun virgilJwt() = Single.create<String> { emitter ->
+    fun virgilJwt(authToken: String) = Single.create<String> { emitter ->
         (BASE_URL + VIRGIL_JWT).httpGet()
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer $authToken")
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Success -> {
@@ -54,8 +60,10 @@ object AuthRx {
     /**
      * You can call it only after successful [authenticate]
      */
-    fun nexmoJwt() = Single.create<String> { emitter ->
+    fun nexmoJwt(authToken: String) = Single.create<String> { emitter ->
         (BASE_URL + NEXMO_JWT).httpGet()
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer $authToken")
             .responseString { _, _, result ->
                 when (result) {
                     is Result.Success -> {

@@ -37,6 +37,7 @@ dependencies {
 
     // Rx
     implementation "io.reactivex.rxjava2:rxkotlin:$versions.kotlinRx"
+    implementation "io.reactivex.rxjava2:rxandroid:$versions.androidRx"
 }
 
 androidExtensions {
