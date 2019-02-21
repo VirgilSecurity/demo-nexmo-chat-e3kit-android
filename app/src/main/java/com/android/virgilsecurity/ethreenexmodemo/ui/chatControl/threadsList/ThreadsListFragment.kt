@@ -33,8 +33,6 @@ class ThreadsListFragment : Fragment() {
         adapter.setOnClickListener {
             (activity!! as ChatControlActivity).changeFragment(ThreadFragment.instance(it))
         }
-        rvThreads.layoutManager = LinearLayoutManager(activity)
-        rvThreads.adapter = adapter
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,6 +52,9 @@ class ThreadsListFragment : Fragment() {
                 }
             }
         }
+
+        rvThreads.layoutManager = LinearLayoutManager(activity)
+        rvThreads.adapter = adapter
 
         presenter.requestThreads(::onGetThreadsSuccess, ::onGetThreadsError)
         presenter.listenNewThreads {
