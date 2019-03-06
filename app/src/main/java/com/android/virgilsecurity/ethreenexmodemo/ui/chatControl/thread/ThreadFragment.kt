@@ -72,7 +72,7 @@ class ThreadFragment : Fragment() {
     }
 
     private fun showBackButton() {
-        (activity as ChatControlActivity).showBackButton()
+        (activity as ChatControlActivity).showBackButton(true)
     }
 
     private fun onNewMessageReceived(nexmoMessage: NexmoMessage) {

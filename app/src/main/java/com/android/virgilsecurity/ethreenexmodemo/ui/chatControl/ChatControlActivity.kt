@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,9 +17,8 @@ import com.nexmo.client.NexmoClient
 import kotlinx.android.synthetic.main.activity_chat_control.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import android.support.v7.app.ActionBarDrawerToggle
-import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread.ThreadFragment
-
+import android.os.PersistableBundle
 
 /**
  * ChatControlActivity
@@ -31,7 +31,7 @@ class ChatControlActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat_control)
+        setContentView(com.android.virgilsecurity.ethreenexmodemo.R.layout.activity_chat_control)
 
         nvBase.setNavigationItemSelectedListener { item ->
             item.isChecked = true
@@ -49,29 +49,47 @@ class ChatControlActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         toggle = object :
-            ActionBarDrawerToggle(this, dlBase, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {}
+            ActionBarDrawerToggle(this, dlBase, com.android.virgilsecurity.ethreenexmodemo.R.string.navigation_drawer_open, com.android.virgilsecurity.ethreenexmodemo.R.string.navigation_drawer_close) {}
         dlBase.addDrawerListener(toggle)
-    }
-
-    fun showBackButton() {
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toggle.syncState()
     }
 
-    fun showDrawerButton() {
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onPostCreate(savedInstanceState, persistentState)
         toggle.syncState()
     }
+
+    fun showBackButton(enable: Boolean) {
+        if (enable) {
+            dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            toggle.isDrawerIndicatorEnabled = false
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        } else {
+            dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            toggle.isDrawerIndicatorEnabled = true
+            toggle.toolbarNavigationClickListener = null
+        }
+    }
+
+//    fun showBackButton() {
+//        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+//    }
+//
+//    fun showDrawerButton() {
+//        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+//        toggle.syncState()
+//    }
 
     private fun handleDrawerClick(item: MenuItem) {
         when (item.itemId) {
-            R.id.itemDrawerThreadsList -> {
+            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerThreadsList -> {
                 changeFragment(ThreadsListFragment.instance())
             }
-            R.id.itemDrawerAddThread -> {
+            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerAddThread -> {
                 changeFragment(AddThreadFragment.instance())
             }
-            R.id.itemDrawerSignOut -> {
+            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerSignOut -> {
                 preferences.clearAuthToken()
                 preferences.clearNexmoToken()
                 preferences.clearVirgilToken()
@@ -87,14 +105,14 @@ class ChatControlActivity : AppCompatActivity() {
         when (fragment) {
             is AddThreadFragment -> supportFragmentManager.beginTransaction()
                 .addToBackStack(ADD_THREAD_TAG)
-                .replace(R.id.flContainer, fragment)
+                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
                 .commit()
             is ThreadFragment -> supportFragmentManager.beginTransaction()
                 .addToBackStack(THREAD_TAG)
-                .replace(R.id.flContainer, fragment)
+                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
                 .commit()
             else -> supportFragmentManager.beginTransaction()
-                .replace(R.id.flContainer, fragment)
+                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
                 .commit()
         }
     }
@@ -102,7 +120,7 @@ class ChatControlActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount != 0) {
             super.onBackPressed()
-            showDrawerButton()
+            showBackButton(false)
         } else {
             if (doubleBack) {
                 finish()

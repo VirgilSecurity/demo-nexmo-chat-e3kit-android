@@ -41,7 +41,7 @@ class ThreadsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showBackButton()
+        showHamburger()
         rvThreads.layoutManager = LinearLayoutManager(activity)
         rvThreads.adapter = adapter
 
@@ -53,8 +53,8 @@ class ThreadsListFragment : Fragment() {
         }
     }
 
-    private fun showBackButton() {
-        (activity as ChatControlActivity).showBackButton()
+    private fun showHamburger() {
+        (activity as ChatControlActivity).showBackButton(false)
     }
 
     private fun onInitNexmoSuccess() {
