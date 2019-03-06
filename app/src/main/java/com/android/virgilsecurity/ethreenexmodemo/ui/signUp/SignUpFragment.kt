@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.android.virgilsecurity.ethreenexmodemo.R
+import com.android.virgilsecurity.ethreenexmodemo.data.model.auth.CreateUserResponse
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActivity
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 
@@ -47,11 +48,24 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onAuthenticateSuccess() {
-        presenter.requestTokens(::onGetTokensSuccess, ::onGetTokensError)
+        presenter.createUser(
+            etLogin.text.toString(),
+            etLogin.text.toString() + DISPLAY,
+            ::onCreateUserSuccess,
+            ::onCreateUserError
+        )
+    }
+
+    private fun onAuthenticateError(throwable: Throwable) {
+        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
     private fun onGetTokensSuccess() {
         presenter.initNexmo(::onInitNexmoSuccess, ::onInitNexmoError)
+    }
+
+    private fun onGetTokensError(throwable: Throwable) {
+        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
     private fun onInitNexmoSuccess() {
@@ -62,15 +76,17 @@ class SignUpFragment : Fragment() {
         Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun onGetTokensError(throwable: Throwable) {
-        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+    private fun onCreateUserSuccess(user: CreateUserResponse) {
+        presenter.requestTokens(::onGetTokensSuccess, ::onGetTokensError)
     }
 
-    private fun onAuthenticateError(throwable: Throwable) {
+    private fun onCreateUserError(throwable: Throwable) {
         Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
         fun instance() = SignUpFragment()
+
+        private const val DISPLAY = "-display"
     }
 }

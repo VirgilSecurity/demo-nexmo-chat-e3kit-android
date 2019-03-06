@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.widget.Toast
-import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.addThread.AddThreadFragment
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.threadsList.ThreadsListFragment
@@ -15,6 +15,9 @@ import com.android.virgilsecurity.ethreenexmodemo.ui.signUp.SignUpActivity
 import com.nexmo.client.NexmoClient
 import kotlinx.android.synthetic.main.activity_chat_control.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
+import android.support.v7.app.ActionBarDrawerToggle
+import com.android.virgilsecurity.ethreenexmodemo.R
+
 
 /**
  * ChatControlActivity
@@ -23,6 +26,7 @@ class ChatControlActivity : AppCompatActivity() {
 
     private val preferences: Preferences by lazy { Preferences(this) }
     private var doubleBack = false
+    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +45,21 @@ class ChatControlActivity : AppCompatActivity() {
 
         changeFragment(ThreadsListFragment.instance())
         nvBase.setCheckedItem(0)
+
+        setSupportActionBar(toolbar)
+        toggle = object :
+            ActionBarDrawerToggle(this, dlBase, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {}
+        dlBase.addDrawerListener(toggle)
+    }
+
+    fun showBackButton() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        toggle.syncState()
+    }
+
+    fun showDrawerButton() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        toggle.syncState()
     }
 
     private fun handleDrawerClick(item: MenuItem) {
@@ -90,6 +109,23 @@ class ChatControlActivity : AppCompatActivity() {
                 Toast.makeText(this, "Press back once more to exit", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                handleHomeClick()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun handleHomeClick() {
+        if (supportFragmentManager.backStackEntryCount > 0)
+            supportFragmentManager.popBackStack()
+        else
+            dlBase.openDrawer(GravityCompat.START)
     }
 
     companion object {

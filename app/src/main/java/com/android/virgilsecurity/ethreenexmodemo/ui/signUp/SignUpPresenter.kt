@@ -2,6 +2,7 @@ package com.android.virgilsecurity.ethreenexmodemo.ui.signUp
 
 import android.content.Context
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
+import com.android.virgilsecurity.ethreenexmodemo.data.model.auth.CreateUserResponse
 import com.android.virgilsecurity.ethreenexmodemo.data.remote.auth.AuthRx
 import com.android.virgilsecurity.ethreenexmodemo.data.remote.nexmo.NexmoRx
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +27,6 @@ class SignUpPresenter(context: Context) {
             .observeOn(AndroidSchedulers.mainThread())
             .map {
                 preferences.setAuthToken(it)
-                preferences.setUsername(identity)
                 it
             }
             .subscribeBy(
@@ -57,17 +57,36 @@ class SignUpPresenter(context: Context) {
     }
 
     fun initNexmo(onSuccess: () -> Unit, onError: (Throwable) -> Unit) {
-        val initNexmoDisposable = nexmoRx.initNexmo()
+        val initNexmoDisposable = nexmoRx.initNexmo(preferences.nexmoToken()!!)
             .subscribeOn(Schedulers.io())
-            .doOnComplete {
-                nexmoRx.loginNexmo(preferences.nexmoToken()!!)
-            }.observeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {
+                preferences.setUsername(it.displayName!!)
+                it
+            }
             .subscribeBy(
-                onComplete = { onSuccess() },
+                onSuccess = { onSuccess() },
                 onError = { onError(it) }
             )
 
         compositeDisposable += initNexmoDisposable
+    }
+
+    fun createUser(
+        identity: String,
+        displayName: String,
+        onSuccess: (CreateUserResponse) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        val createUserDisposable = nexmoRx.createUser(identity, displayName)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { onSuccess(it) },
+                onError = { onError(it) }
+            )
+
+        compositeDisposable += createUserDisposable
     }
 
     fun disposeAll() = compositeDisposable.clear()

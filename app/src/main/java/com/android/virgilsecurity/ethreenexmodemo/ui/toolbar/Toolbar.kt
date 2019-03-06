@@ -39,7 +39,6 @@ import android.util.AttributeSet
 import android.view.View
 import kotlinx.android.synthetic.main.toolbar_custom.view.*
 
-
 /**
  * Toolbar
  */

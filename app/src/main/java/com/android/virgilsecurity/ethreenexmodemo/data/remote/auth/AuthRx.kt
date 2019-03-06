@@ -19,7 +19,7 @@ object AuthRx {
         val jsonBody = JSONObject()
         jsonBody.put(KEY_IDENTITY, identity)
 
-        (BASE_URL + AUTHENTICATE).httpPost()
+        (BASE_URL + AUTH + AUTHENTICATE).httpPost()
             .body(jsonBody.toString())
             .header("Content-Type", "application/json")
             .responseString { _, _, result ->
@@ -40,7 +40,7 @@ object AuthRx {
      * You can call it only after successful [authenticate]
      */
     fun virgilJwt(authToken: String) = Single.create<String> { emitter ->
-        (BASE_URL + VIRGIL_JWT).httpGet()
+        (BASE_URL + AUTH + VIRGIL_JWT).httpGet()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $authToken")
             .responseString { _, _, result ->
@@ -61,7 +61,7 @@ object AuthRx {
      * You can call it only after successful [authenticate]
      */
     fun nexmoJwt(authToken: String) = Single.create<String> { emitter ->
-        (BASE_URL + NEXMO_JWT).httpGet()
+        (BASE_URL + AUTH + NEXMO_JWT).httpGet()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $authToken")
             .responseString { _, _, result ->
@@ -79,6 +79,7 @@ object AuthRx {
     }
 
     private const val BASE_URL = "http://10.0.2.2:3000"
+    private const val AUTH = "/auth"
     private const val AUTHENTICATE = "/authenticate"
     private const val VIRGIL_JWT = "/virgil-jwt"
     private const val NEXMO_JWT = "/nexmo-jwt"
