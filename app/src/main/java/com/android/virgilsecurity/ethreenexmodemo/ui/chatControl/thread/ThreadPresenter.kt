@@ -12,7 +12,6 @@ import com.nexmo.client.request_listener.NexmoRequestListener
  */
 class ThreadPresenter(context: Context) {
 
-    private val nexmoClient = NexmoClient.get()
     private val preferences = Preferences.instance(context)
 
     fun requestMessages(thread: NexmoConversation, onNewMessage: (NexmoMessage) -> Unit) {
@@ -26,9 +25,11 @@ class ThreadPresenter(context: Context) {
             }
 
             override fun onTextEvent(textEvent: NexmoTextEvent) {
-                val sender =
-                    thread.allMembers.filter { it.user.displayName != preferences.username() }.first().user.displayName
-                onNewMessage(NexmoMessage(textEvent.text, sender!!))
+                if (textEvent.member.user.name != preferences.username()) {
+                    val sender = thread.allMembers.first { it.user.name != preferences.username() }
+                        .user.name // TODO get right name
+                    onNewMessage(NexmoMessage(textEvent.text, sender))
+                }
             }
 
             override fun onSeenReceipt(p0: NexmoSeenEvent) {

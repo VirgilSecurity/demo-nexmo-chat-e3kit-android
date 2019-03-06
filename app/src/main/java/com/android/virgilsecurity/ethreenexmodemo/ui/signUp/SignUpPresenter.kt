@@ -61,7 +61,7 @@ class SignUpPresenter(context: Context) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map {
-                preferences.setUsername(it.displayName!!)
+                preferences.setUsername(it.name!!)
                 it
             }
             .subscribeBy(

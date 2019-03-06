@@ -10,9 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
-import com.android.virgilsecurity.ethreenexmodemo.ui.toolbar.Toolbar
+import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActivity
 import com.nexmo.client.NexmoConversation
-import com.nexmo.client.NexmoTextEvent
 import kotlinx.android.synthetic.main.fragment_thread.*
 
 /**
@@ -21,7 +20,6 @@ import kotlinx.android.synthetic.main.fragment_thread.*
 class ThreadFragment : Fragment() {
 
     private lateinit var thread: NexmoConversation
-    private lateinit var toolbar: Toolbar
     private lateinit var presenter: ThreadPresenter
     private lateinit var adapter: ThreadRVAdapter
 
@@ -47,23 +45,13 @@ class ThreadFragment : Fragment() {
 
         presenter = ThreadPresenter(context)
         adapter = ThreadRVAdapter(context)
-        rvMessages.layoutManager = LinearLayoutManager(context)
-        rvMessages.adapter = adapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar = toolbarThread as Toolbar
-        toolbar.setTitle(thread.displayName)
-        toolbar.showBackButton()
-        toolbar.setOnToolbarItemClickListener {
-            when (it.id) {
-                R.id.ivBack -> {
-                    activity!!.onBackPressed()
-                }
-            }
-        }
+        rvMessages.layoutManager = LinearLayoutManager(context)
+        rvMessages.adapter = adapter
 
         presenter.requestMessages(thread, ::onNewMessageReceived)
 
@@ -79,14 +67,24 @@ class ThreadFragment : Fragment() {
                 Toast.makeText(activity!!, "Type in message first", Toast.LENGTH_SHORT).show()
             }
         }
+
+        showBackButton()
+    }
+
+    private fun showBackButton() {
+        (activity as ChatControlActivity).showBackButton()
     }
 
     private fun onNewMessageReceived(nexmoMessage: NexmoMessage) {
-        adapter.addItem(nexmoMessage)
+        activity!!.runOnUiThread {
+            adapter.addItem(nexmoMessage)
+        }
     }
 
     private fun onMessageSendSuccess(nexmoMessage: NexmoMessage) {
-        adapter.addItem(nexmoMessage)
+        activity!!.runOnUiThread {
+            adapter.addItem(nexmoMessage)
+        }
     }
 
     private fun onMessageSendError(throwable: Throwable) {

@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_chat_control.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import android.support.v7.app.ActionBarDrawerToggle
 import com.android.virgilsecurity.ethreenexmodemo.R
+import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread.ThreadFragment
 
 
 /**
@@ -83,13 +84,16 @@ class ChatControlActivity : AppCompatActivity() {
     }
 
     fun changeFragment(fragment: Fragment) {
-        if (fragment is AddThreadFragment) {
-            supportFragmentManager.beginTransaction()
+        when (fragment) {
+            is AddThreadFragment -> supportFragmentManager.beginTransaction()
                 .addToBackStack(ADD_THREAD_TAG)
                 .replace(R.id.flContainer, fragment)
                 .commit()
-        } else {
-            supportFragmentManager.beginTransaction()
+            is ThreadFragment -> supportFragmentManager.beginTransaction()
+                .addToBackStack(THREAD_TAG)
+                .replace(R.id.flContainer, fragment)
+                .commit()
+            else -> supportFragmentManager.beginTransaction()
                 .replace(R.id.flContainer, fragment)
                 .commit()
         }
@@ -98,6 +102,7 @@ class ChatControlActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount != 0) {
             super.onBackPressed()
+            showDrawerButton()
         } else {
             if (doubleBack) {
                 finish()
@@ -130,6 +135,7 @@ class ChatControlActivity : AppCompatActivity() {
 
     companion object {
         private const val ADD_THREAD_TAG = "ADD_THREAD_TAG"
+        private const val THREAD_TAG = "THREAD_TAG"
         private const val DOUBLE_BACK_DELAY = 2000L
 
         fun start(activity: AppCompatActivity) {

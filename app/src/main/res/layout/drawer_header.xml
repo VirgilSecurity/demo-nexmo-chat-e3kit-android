@@ -14,11 +14,13 @@
             android:id="@+id/ivDrawerHeaderImage"
             android:src="@drawable/ic_baseline_face"
             android:layout_width="64dp"
+            android:tint="@color/snow"
             android:layout_height="64dp"/>
 
     <TextView
             android:id="@+id/ivDrawerHeaderName"
             android:gravity="start"
+            android:textColor="@color/snow"
             android:layout_marginStart="16dp"
             android:textSize="18sp"
             android:layout_width="match_parent"

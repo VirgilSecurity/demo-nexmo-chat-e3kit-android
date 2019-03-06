@@ -36,24 +36,23 @@ class ThreadsListPresenter(context: Context) {
         })
     }
 
-    fun listenNewThreads(threadAdded: (NexmoConversation) -> Unit) {
-        nexmoClient.addNewConversationListener {
-            threadAdded(it)
-        }
-    }
+    fun listenNewThreads(threadAddedSuccess: (NexmoConversation) -> Unit, threadAddedError: (Throwable) -> Unit) {
+        nexmoClient.addNewConversationListener { conversation ->
+            val membmers = conversation.allMembers
+            val myself = membmers.find { it.user.name == preferences.username() }
+            if (myself == null) {
+                conversation.join(object : NexmoRequestListener<NexmoMember> {
+                    override fun onSuccess(p0: NexmoMember?) {
+                        threadAddedSuccess(conversation)
+                    }
 
-    fun listenInvites(onSuccess: (NexmoMember) -> Unit, onError: (Throwable) -> Unit) {
-        nexmoClient.addNewConversationListener {
-            it.join(object : NexmoRequestListener<NexmoMember> {
-                override fun onSuccess(member: NexmoMember) {
-                    onSuccess(member)
-                }
-
-                override fun onError(error: NexmoApiError) {
-                    onError(Throwable(error.message))
-                }
-
-            })
+                    override fun onError(error: NexmoApiError) {
+                        threadAddedError(Throwable(error.message))
+                    }
+                })
+            } else {
+                threadAddedSuccess(conversation)
+            }
         }
     }
 
@@ -70,6 +69,6 @@ class ThreadsListPresenter(context: Context) {
     }
 
     fun disposeAll() {
-        nexmoClient?.removeNewConversationListener()
+        nexmoClient.removeNewConversationListener()
     }
 }
