@@ -46,8 +46,12 @@ class ThreadsListFragment : Fragment() {
         if (NexmoClient.get() == null) {
             presenter.initNexmo(::onInitNexmoSuccess, ::onInitNexmoError)
         } else {
-            presenter.requestThreads(::onGetThreadsSuccess, ::onGetThreadsError)
-            presenter.listenNewThreads(::onThreadAddedSuccess, ::onThreadAddedError)
+            if (adapter.itemCount == 0) {
+                presenter.requestThreads(::onGetThreadsSuccess, ::onGetThreadsError)
+                presenter.listenNewThreads(::onThreadAddedSuccess, ::onThreadAddedError)
+            } else {
+                pbLoading.visibility = View.INVISIBLE
+            }
         }
 
         ivMenuThreadsList.setOnClickListener {
@@ -57,12 +61,26 @@ class ThreadsListFragment : Fragment() {
     }
 
     private fun onInitNexmoSuccess() {
+        presenter.startEthree(::onStartEthreeSuccess, ::onStartEthreeError)
+    }
+
+    private fun onInitNexmoError(throwable: Throwable) {
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onStartEthreeSuccess() {
         presenter.requestThreads(::onGetThreadsSuccess, ::onGetThreadsError)
         presenter.listenNewThreads(::onThreadAddedSuccess, ::onThreadAddedError)
     }
 
-    private fun onInitNexmoError(throwable: Throwable) {
-        Toast.makeText(activity, throwable.message, Toast.LENGTH_SHORT).show()
+    private fun onStartEthreeError(throwable: Throwable) {
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onThreadAddedSuccess(nexmoConversation: NexmoConversation) {
@@ -70,15 +88,24 @@ class ThreadsListFragment : Fragment() {
     }
 
     private fun onThreadAddedError(throwable: Throwable) {
-        Toast.makeText(activity, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onGetThreadsSuccess(threads: Collection<NexmoConversation>) {
-        adapter.setItems(threads)
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            adapter.setItems(threads)
+        }
     }
 
     private fun onGetThreadsError(throwable: Throwable) {
-        Toast.makeText(activity, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDetach() {

@@ -1,15 +1,14 @@
 package com.android.virgilsecurity.ethreenexmodemo
 
 import android.app.Application
+import com.virgilsecurity.android.ethree.kotlin.interaction.EThree
 
 /**
  * EThreeNexmoApp
  */
 class EThreeNexmoApp : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-
-
+    companion object {
+        lateinit var eThree: EThree
     }
 }

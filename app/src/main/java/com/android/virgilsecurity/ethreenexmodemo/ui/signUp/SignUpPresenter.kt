@@ -1,10 +1,12 @@
 package com.android.virgilsecurity.ethreenexmodemo.ui.signUp
 
 import android.content.Context
+import com.android.virgilsecurity.ethreenexmodemo.EThreeNexmoApp
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
 import com.android.virgilsecurity.ethreenexmodemo.data.model.auth.CreateUserResponse
 import com.android.virgilsecurity.ethreenexmodemo.data.remote.auth.AuthRx
 import com.android.virgilsecurity.ethreenexmodemo.data.remote.nexmo.NexmoRx
+import com.virgilsecurity.android.ethree.kotlin.interaction.EThree
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -14,7 +16,7 @@ import io.reactivex.schedulers.Schedulers
 /**
  * SignUpPresenter
  */
-class SignUpPresenter(context: Context) {
+class SignUpPresenter(val context: Context) {
 
     private val compositeDisposable = CompositeDisposable()
     private val authRx = AuthRx
@@ -61,7 +63,7 @@ class SignUpPresenter(context: Context) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map {
-                preferences.setUsername(it.name!!)
+                preferences.setUsername(it.name)
                 it
             }
             .subscribeBy(
@@ -87,6 +89,34 @@ class SignUpPresenter(context: Context) {
             )
 
         compositeDisposable += createUserDisposable
+    }
+
+    fun startEthree(onSuccess: () -> Unit, onError: (Throwable) -> Unit) {
+        EThree.initialize(context,
+            object : EThree.OnGetTokenCallback {
+                override fun onGetToken(): String {
+                    return preferences.virgilToken()!!
+                }
+
+            },
+            object : EThree.OnResultListener<EThree> {
+                override fun onSuccess(result: EThree) {
+                    EThreeNexmoApp.eThree = result
+                    EThreeNexmoApp.eThree.register(object : EThree.OnCompleteListener {
+                        override fun onSuccess() {
+                            onSuccess()
+                        }
+
+                        override fun onError(throwable: Throwable) {
+                            onError(throwable)
+                        }
+                    })
+                }
+
+                override fun onError(throwable: Throwable) {
+                    onError(throwable)
+                }
+            })
     }
 
     fun disposeAll() = compositeDisposable.clear()

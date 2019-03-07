@@ -1,11 +1,14 @@
 package com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread
 
 import android.content.Context
+import com.android.virgilsecurity.ethreenexmodemo.EThreeNexmoApp
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
 import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
 import com.nexmo.client.*
 import com.nexmo.client.request_listener.NexmoApiError
 import com.nexmo.client.request_listener.NexmoRequestListener
+import com.virgilsecurity.android.ethree.kotlin.interaction.EThree
+import com.virgilsecurity.sdk.crypto.PublicKey
 
 /**
  * ThreadPresenter
@@ -13,6 +16,7 @@ import com.nexmo.client.request_listener.NexmoRequestListener
 class ThreadPresenter(context: Context) {
 
     private val preferences = Preferences.instance(context)
+    private lateinit var publicKey: PublicKey
 
     fun requestMessages(thread: NexmoConversation, onNewMessage: (NexmoMessage) -> Unit) {
         thread.addMessageEventListener(object : NexmoMessageEventListener {
@@ -53,9 +57,11 @@ class ThreadPresenter(context: Context) {
         onSuccess: (NexmoMessage) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        thread.sendText(text, object : NexmoRequestListener<Void> {
+        val encryptedText = EThreeNexmoApp.eThree.encrypt(text, listOf(publicKey))
+
+        thread.sendText(encryptedText, object : NexmoRequestListener<Void> {
             override fun onSuccess(p0: Void?) {
-                onSuccess(NexmoMessage(text, preferences.username()!!))
+                onSuccess(NexmoMessage(encryptedText, preferences.username()!!))
             }
 
             override fun onError(error: NexmoApiError) {
@@ -63,5 +69,22 @@ class ThreadPresenter(context: Context) {
             }
 
         })
+    }
+
+    fun requestPublicKey(thread: NexmoConversation, onSuccess: (PublicKey) -> Unit, onError: (Throwable) -> Unit) {
+        val interlocutor = thread.allMembers.first { it.user.name != preferences.username() }.user.name
+
+        EThreeNexmoApp.eThree.lookupPublicKeys(
+            listOf(interlocutor),
+            object : EThree.OnResultListener<Map<String, PublicKey>> {
+                override fun onSuccess(result: Map<String, PublicKey>) {
+                    publicKey = result.getValue(interlocutor)
+                    onSuccess(publicKey)
+                }
+
+                override fun onError(throwable: Throwable) {
+                    onError(throwable)
+                }
+            })
     }
 }

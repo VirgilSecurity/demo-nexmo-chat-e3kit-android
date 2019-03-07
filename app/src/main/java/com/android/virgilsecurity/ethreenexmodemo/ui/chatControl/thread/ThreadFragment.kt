@@ -12,8 +12,8 @@ import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActivity
 import com.nexmo.client.NexmoConversation
+import com.virgilsecurity.sdk.crypto.PublicKey
 import kotlinx.android.synthetic.main.fragment_thread.*
-import kotlinx.android.synthetic.main.fragment_threads_list.*
 
 /**
  * ThreadFragment
@@ -55,6 +55,7 @@ class ThreadFragment : Fragment() {
         rvMessages.adapter = adapter
 
         presenter.requestMessages(thread, ::onNewMessageReceived)
+        presenter.requestPublicKey(thread, ::onGetPublicKeySuccess, ::onGetPublicKeyError)
 
         btnSend.setOnClickListener {
             if (etMessage.text.toString().isNotBlank()) {
@@ -72,7 +73,21 @@ class ThreadFragment : Fragment() {
         ivBackThread.setOnClickListener {
             (activity as ChatControlActivity).goBack()
         }
-        tvTitleThreadsList.text = thread.displayName
+        tvTitleThread.text = thread.displayName
+    }
+
+    private fun onGetPublicKeySuccess(publicKey: PublicKey) {
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            adapter.setPublicKey(publicKey)
+        }
+    }
+
+    private fun onGetPublicKeyError(throwable: Throwable) {
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onNewMessageReceived(nexmoMessage: NexmoMessage) {
@@ -88,7 +103,10 @@ class ThreadFragment : Fragment() {
     }
 
     private fun onMessageSendError(throwable: Throwable) {
-        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            pbLoading.visibility = View.INVISIBLE
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {

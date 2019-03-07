@@ -3,15 +3,12 @@ package com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import com.android.virgilsecurity.ethreenexmodemo.EThreeNexmoApp
 import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
 import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
-import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.threadsList.ThreadHolder
-import com.nexmo.client.NexmoConversation
-import com.nexmo.client.NexmoTextEvent
-import java.lang.IllegalStateException
+import com.virgilsecurity.sdk.crypto.PublicKey
 import java.util.*
 
 /**
@@ -21,6 +18,7 @@ class ThreadRVAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.View
 
     private var items: MutableList<NexmoMessage> = Collections.emptyList()
     private val preferences = Preferences.instance(context)
+    private lateinit var interlocutorsPublicKey: PublicKey
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         if (viewType == HolderType.YOU.type) {
@@ -35,8 +33,20 @@ class ThreadRVAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.View
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) =
         when (holder) {
-            is YouMessageHolder -> holder.bind(items[position].text)
-            is MeMessageHolder -> holder.bind(items[position].text)
+            is YouMessageHolder -> {
+                val decryptedText = EThreeNexmoApp.eThree.decrypt(
+                    items[position].text,
+                    interlocutorsPublicKey
+                )
+                holder.bind(decryptedText)
+            }
+            is MeMessageHolder -> {
+                val decryptedText = EThreeNexmoApp.eThree.decrypt(
+                    items[position].text,
+                    interlocutorsPublicKey
+                )
+                holder.bind(decryptedText)
+            }
             else -> throw IllegalStateException("Only two message holders are available")
         }
 
@@ -65,6 +75,10 @@ class ThreadRVAdapter(context: Context) : RecyclerView.Adapter<RecyclerView.View
             this.items.add(item)
         }
         notifyDataSetChanged()
+    }
+
+    fun setPublicKey(publicKey: PublicKey) {
+        interlocutorsPublicKey = publicKey
     }
 }
 

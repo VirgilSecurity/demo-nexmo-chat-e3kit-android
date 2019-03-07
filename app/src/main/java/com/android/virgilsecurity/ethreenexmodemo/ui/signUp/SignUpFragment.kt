@@ -57,7 +57,9 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onAuthenticateError(throwable: Throwable) {
-        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onGetTokensSuccess() {
@@ -65,15 +67,19 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onGetTokensError(throwable: Throwable) {
-        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onInitNexmoSuccess() {
-        ChatControlActivity.start(activity!! as AppCompatActivity)
+        presenter.startEthree(::onStartEthreeSuccess, ::onStartEthreeError)
     }
 
     private fun onInitNexmoError(throwable: Throwable) {
-        Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        activity!!.runOnUiThread {
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onCreateUserSuccess(user: CreateUserResponse) {
@@ -81,6 +87,16 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onCreateUserError(throwable: Throwable) {
+        activity!!.runOnUiThread {
+            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onStartEthreeSuccess() {
+        ChatControlActivity.start(activity!! as AppCompatActivity)
+    }
+
+    private fun onStartEthreeError(throwable: Throwable) {
         Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
     }
 
