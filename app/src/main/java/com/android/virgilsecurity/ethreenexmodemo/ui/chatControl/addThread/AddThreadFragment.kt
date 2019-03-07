@@ -38,11 +38,10 @@ class AddThreadFragment : Fragment() {
                 presenter.requestAddThread(etInterlocutor.text.toString(), ::onAddThreadSuccess, ::onAddThreadError)
         }
 
-        showBackButton()
-    }
-
-    private fun showBackButton() {
-        (activity as ChatControlActivity).showBackButton(true)
+        ivBackAddThread.setOnClickListener {
+            (activity as ChatControlActivity).goBack()
+        }
+        tvTitleAddThread.text = "Add Thread"
     }
 
     private fun onAddThreadSuccess(nexmoConversation: NexmoConversation) {

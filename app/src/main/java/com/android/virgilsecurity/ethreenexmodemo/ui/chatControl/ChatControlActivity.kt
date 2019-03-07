@@ -7,18 +7,18 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Toast
+import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.local.Preferences
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.addThread.AddThreadFragment
+import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread.ThreadFragment
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.threadsList.ThreadsListFragment
 import com.android.virgilsecurity.ethreenexmodemo.ui.signUp.SignUpActivity
 import com.nexmo.client.NexmoClient
 import kotlinx.android.synthetic.main.activity_chat_control.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
-import android.support.v7.app.ActionBarDrawerToggle
-import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread.ThreadFragment
-import android.os.PersistableBundle
 
 /**
  * ChatControlActivity
@@ -27,11 +27,10 @@ class ChatControlActivity : AppCompatActivity() {
 
     private val preferences: Preferences by lazy { Preferences(this) }
     private var doubleBack = false
-    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.android.virgilsecurity.ethreenexmodemo.R.layout.activity_chat_control)
+        setContentView(R.layout.activity_chat_control)
 
         nvBase.setNavigationItemSelectedListener { item ->
             item.isChecked = true
@@ -45,51 +44,28 @@ class ChatControlActivity : AppCompatActivity() {
         nvBase.getHeaderView(0).ivDrawerHeaderName.text = preferences.username()
 
         changeFragment(ThreadsListFragment.instance())
-        nvBase.setCheckedItem(0)
-
-        setSupportActionBar(toolbar)
-        toggle = object :
-            ActionBarDrawerToggle(this, dlBase, com.android.virgilsecurity.ethreenexmodemo.R.string.navigation_drawer_open, com.android.virgilsecurity.ethreenexmodemo.R.string.navigation_drawer_close) {}
-        dlBase.addDrawerListener(toggle)
-        toggle.syncState()
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onPostCreate(savedInstanceState, persistentState)
-        toggle.syncState()
-    }
-
-    fun showBackButton(enable: Boolean) {
-        if (enable) {
-            dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            toggle.isDrawerIndicatorEnabled = false
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        } else {
-            dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            toggle.isDrawerIndicatorEnabled = true
-            toggle.toolbarNavigationClickListener = null
+        nvBase.post {
+            nvBase.setCheckedItem(R.id.itemDrawerThreadsList)
         }
     }
 
-//    fun showBackButton() {
-//        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-//    }
-//
-//    fun showDrawerButton() {
-//        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-//        toggle.syncState()
-//    }
+    fun goBack() {
+        onBackPressed()
+    }
+
+    fun openDrawer() {
+        dlBase.openDrawer(Gravity.START)
+    }
 
     private fun handleDrawerClick(item: MenuItem) {
         when (item.itemId) {
-            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerThreadsList -> {
+            R.id.itemDrawerThreadsList -> {
                 changeFragment(ThreadsListFragment.instance())
             }
-            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerAddThread -> {
+            R.id.itemDrawerAddThread -> {
                 changeFragment(AddThreadFragment.instance())
             }
-            com.android.virgilsecurity.ethreenexmodemo.R.id.itemDrawerSignOut -> {
+            R.id.itemDrawerSignOut -> {
                 preferences.clearAuthToken()
                 preferences.clearNexmoToken()
                 preferences.clearVirgilToken()
@@ -103,16 +79,22 @@ class ChatControlActivity : AppCompatActivity() {
 
     fun changeFragment(fragment: Fragment) {
         when (fragment) {
-            is AddThreadFragment -> supportFragmentManager.beginTransaction()
-                .addToBackStack(ADD_THREAD_TAG)
-                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
-                .commit()
-            is ThreadFragment -> supportFragmentManager.beginTransaction()
-                .addToBackStack(THREAD_TAG)
-                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
-                .commit()
+            is AddThreadFragment -> {
+                dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                supportFragmentManager.beginTransaction()
+                    .addToBackStack(ADD_THREAD_TAG)
+                    .replace(R.id.flContainer, fragment)
+                    .commit()
+            }
+            is ThreadFragment -> {
+                dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                supportFragmentManager.beginTransaction()
+                    .addToBackStack(THREAD_TAG)
+                    .replace(R.id.flContainer, fragment)
+                    .commit()
+            }
             else -> supportFragmentManager.beginTransaction()
-                .replace(com.android.virgilsecurity.ethreenexmodemo.R.id.flContainer, fragment)
+                .replace(R.id.flContainer, fragment)
                 .commit()
         }
     }
@@ -120,7 +102,8 @@ class ChatControlActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount != 0) {
             super.onBackPressed()
-            showBackButton(false)
+            nvBase.setCheckedItem(R.id.itemDrawerThreadsList)
+            dlBase.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         } else {
             if (doubleBack) {
                 finish()

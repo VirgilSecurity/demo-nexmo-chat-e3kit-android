@@ -13,6 +13,7 @@ import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActivity
 import com.nexmo.client.NexmoConversation
 import kotlinx.android.synthetic.main.fragment_thread.*
+import kotlinx.android.synthetic.main.fragment_threads_list.*
 
 /**
  * ThreadFragment
@@ -68,11 +69,10 @@ class ThreadFragment : Fragment() {
             }
         }
 
-        showBackButton()
-    }
-
-    private fun showBackButton() {
-        (activity as ChatControlActivity).showBackButton(true)
+        ivBackThread.setOnClickListener {
+            (activity as ChatControlActivity).goBack()
+        }
+        tvTitleThreadsList.text = thread.displayName
     }
 
     private fun onNewMessageReceived(nexmoMessage: NexmoMessage) {

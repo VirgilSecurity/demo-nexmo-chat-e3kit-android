@@ -13,7 +13,6 @@ import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActi
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.thread.ThreadFragment
 import com.nexmo.client.NexmoClient
 import com.nexmo.client.NexmoConversation
-import com.nexmo.client.NexmoMember
 import kotlinx.android.synthetic.main.fragment_threads_list.*
 
 
@@ -41,7 +40,6 @@ class ThreadsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showHamburger()
         rvThreads.layoutManager = LinearLayoutManager(activity)
         rvThreads.adapter = adapter
 
@@ -51,10 +49,11 @@ class ThreadsListFragment : Fragment() {
             presenter.requestThreads(::onGetThreadsSuccess, ::onGetThreadsError)
             presenter.listenNewThreads(::onThreadAddedSuccess, ::onThreadAddedError)
         }
-    }
 
-    private fun showHamburger() {
-        (activity as ChatControlActivity).showBackButton(false)
+        ivMenuThreadsList.setOnClickListener {
+            (activity as ChatControlActivity).openDrawer()
+        }
+        tvTitleThreadsList.text = "Threads List"
     }
 
     private fun onInitNexmoSuccess() {
