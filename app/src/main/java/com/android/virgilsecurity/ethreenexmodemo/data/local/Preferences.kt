@@ -102,7 +102,8 @@ class Preferences(context: Context) {
         private const val KEY_NEXMO_TOKEN = "KEY_NEXMO_TOKEN"
         private const val KEY_USERNAME = "KEY_USERNAME"
 
-        @Volatile private var INSTANCE: Preferences? = null
+        @Volatile
+        private var INSTANCE: Preferences? = null
 
         fun instance(context: Context): Preferences = INSTANCE ?: synchronized(this) {
             INSTANCE ?: Preferences(context).also { INSTANCE = it }

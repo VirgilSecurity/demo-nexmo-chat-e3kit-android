@@ -31,25 +31,26 @@
   ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="@dimen/default_margin"
-    android:padding="10dp">
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:padding="10dp">
 
     <TextView
-        android:id="@+id/tvMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:autoLink="web"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/message_background_me"
-        android:maxWidth="238dp"
-        android:padding="10dp"
-        android:textColor="@color/illToad"
-        android:textSize="@dimen/increased_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Hi, joe how are you, do you like to join our party in next week because you don't like party?" />
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/message_background_me"
+            android:maxWidth="238dp"
+            android:padding="10dp"
+            android:textColor="@color/illToad"
+            android:textSize="@dimen/increased_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Hi, joe how are you, do you like to join our party in next week because you don't like party?"/>
 </android.support.constraint.ConstraintLayout>

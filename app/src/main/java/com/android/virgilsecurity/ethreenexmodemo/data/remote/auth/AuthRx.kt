@@ -5,9 +5,9 @@ import com.android.virgilsecurity.ethreenexmodemo.data.model.auth.NexmoJwtRespon
 import com.android.virgilsecurity.ethreenexmodemo.data.model.auth.VirgilJwtResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
 import com.google.gson.Gson
 import io.reactivex.Single
-import com.github.kittinunf.result.Result
 import org.json.JSONObject
 
 /**
