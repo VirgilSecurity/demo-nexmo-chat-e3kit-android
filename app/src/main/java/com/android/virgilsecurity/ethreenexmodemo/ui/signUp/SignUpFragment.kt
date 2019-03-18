@@ -88,7 +88,15 @@ class SignUpFragment : Fragment() {
 
     private fun onCreateUserError(throwable: Throwable) {
         activity!!.runOnUiThread {
-            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+            val errorParts = throwable.message!!.split("HTTP Exception ")
+            if (errorParts.size == 2 || errorParts[1].trimEnd() == BAD_REQUEST)
+                Toast.makeText(
+                    activity!!,
+                    "User already exists, please enter other identity",
+                    Toast.LENGTH_SHORT
+                ).show()
+            else
+                Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -104,5 +112,6 @@ class SignUpFragment : Fragment() {
         fun instance() = SignUpFragment()
 
         private const val DISPLAY = "-display"
+        private const val BAD_REQUEST = "400"
     }
 }
