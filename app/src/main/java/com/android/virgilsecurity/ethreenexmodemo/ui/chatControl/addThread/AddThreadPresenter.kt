@@ -25,8 +25,8 @@ class AddThreadPresenter(context: Context) {
 
                     thread.join(object : NexmoRequestListener<NexmoMember> {
                         override fun onSuccess(p0: NexmoMember?) {
-                            thread.join(interlocutor, object : NexmoRequestListener<Any?> {
-                                override fun onSuccess(p0: Any?) {
+                            thread.join(interlocutor, object : NexmoRequestListener<String?> {
+                                override fun onSuccess(p0: String?) {
                                     onSuccess(thread)
                                 }
 

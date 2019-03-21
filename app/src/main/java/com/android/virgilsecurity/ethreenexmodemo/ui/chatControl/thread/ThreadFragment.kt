@@ -12,6 +12,7 @@ import com.android.virgilsecurity.ethreenexmodemo.R
 import com.android.virgilsecurity.ethreenexmodemo.data.model.chat.NexmoMessage
 import com.android.virgilsecurity.ethreenexmodemo.ui.chatControl.ChatControlActivity
 import com.nexmo.client.NexmoConversation
+import com.virgilsecurity.android.common.exceptions.PublicKeyNotFoundException
 import com.virgilsecurity.sdk.crypto.PublicKey
 import kotlinx.android.synthetic.main.fragment_thread.*
 
@@ -86,7 +87,10 @@ class ThreadFragment : Fragment() {
     private fun onGetPublicKeyError(throwable: Throwable) {
         activity!!.runOnUiThread {
             pbLoading.visibility = View.INVISIBLE
-            Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
+            if (throwable is PublicKeyNotFoundException)
+            Toast.makeText(activity!!, "No public key was found", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(activity!!, throwable.message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -97,6 +101,7 @@ class ThreadFragment : Fragment() {
     }
 
     private fun onMessageSendSuccess(nexmoMessage: NexmoMessage) {
+        etMessage.text.clear()
         activity!!.runOnUiThread {
             adapter.addItem(nexmoMessage)
         }
