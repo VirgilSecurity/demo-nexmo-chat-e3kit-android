@@ -11,7 +11,7 @@ buildscript {
             kotlin          : "1.3.21",
 
             // Nexmo
-            nexmoClient     : "0.2.66",
+            nexmoClient     : "0.2.67",
 
             // Http client
             fuel            : "2.0.1",
