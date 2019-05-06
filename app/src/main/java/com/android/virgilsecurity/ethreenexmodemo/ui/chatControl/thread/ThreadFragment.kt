@@ -55,7 +55,7 @@ class ThreadFragment : Fragment() {
         rvMessages.layoutManager = LinearLayoutManager(context)
         rvMessages.adapter = adapter
 
-        presenter.requestMessages(thread, ::onNewMessageReceived)
+        presenter.startMessagesListener(thread, ::onNewMessageReceived)
         presenter.requestPublicKey(thread, ::onGetPublicKeySuccess, ::onGetPublicKeyError)
 
         btnSend.setOnClickListener {
@@ -75,6 +75,12 @@ class ThreadFragment : Fragment() {
             (activity as ChatControlActivity).goBack()
         }
         tvTitleThread.text = thread.displayName
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        presenter.stopMessagesListener(thread)
     }
 
     private fun onGetPublicKeySuccess(publicKey: PublicKey) {

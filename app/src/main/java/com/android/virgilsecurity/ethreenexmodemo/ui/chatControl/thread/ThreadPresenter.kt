@@ -17,9 +17,10 @@ class ThreadPresenter(context: Context) {
 
     private val preferences = Preferences.instance(context)
     private lateinit var publicKey: PublicKey
+    private lateinit var messageEventListener: NexmoMessageEventListener
 
-    fun requestMessages(thread: NexmoConversation, onNewMessage: (NexmoMessage) -> Unit) {
-        thread.addMessageEventListener(object : NexmoMessageEventListener {
+    fun startMessagesListener(thread: NexmoConversation, onNewMessage: (NexmoMessage) -> Unit) {
+        messageEventListener = object : NexmoMessageEventListener {
             override fun onTypingEvent(p0: NexmoTypingEvent) {
                 // TODO Implement body or it will be empty ):
             }
@@ -48,7 +49,9 @@ class ThreadPresenter(context: Context) {
                 // TODO Implement body or it will be empty ):
             }
 
-        })
+        }
+
+        thread.addMessageEventListener(messageEventListener)
     }
 
     fun requestSendMessage(
@@ -86,5 +89,10 @@ class ThreadPresenter(context: Context) {
                     onError(throwable)
                 }
             })
+    }
+
+    fun stopMessagesListener(thread: NexmoConversation) {
+        if (::messageEventListener.isInitialized)
+            thread.removeMessageEventListener(messageEventListener)
     }
 }
